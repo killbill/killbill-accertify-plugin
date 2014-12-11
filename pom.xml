@@ -186,7 +186,24 @@
                         <Export-Package />
                         <Private-Package>org.killbill.billing.plugin.accertify.*</Private-Package>
                         <!-- Optional resolution because exported by the Felix system bundle -->
-                        <Import-Package>org.killbill.billing.osgi.api,
+                        <Import-Package>org.killbill.billing.account.api;
+                            org.killbill.billing.catalog.api;
+                            org.killbill.billing.invoice.api;
+                            org.killbill.billing.entitlement.api;
+                            org.killbill.billing.notification.api;
+                            org.killbill.billing.notification.plugin.api;
+                            org.killbill.billing.notification.plugin;
+                            org.killbill.billing.osgi.api;
+                            org.killbill.billing.osgi.api.config;
+                            org.killbill.billing.payment.api;
+                            org.killbill.billing.payment.plugin.api;
+                            org.killbill.billing.routing.plugin.api;
+                            org.killbill.billing.tenant.api;
+                            org.killbill.billing.usage.api;
+                            org.killbill.billing.util.api;
+                            org.killbill.billing.currency.plugin.api;
+                            org.killbill.billing.currency.api;
+                            org.killbill.billing.security.api;
                             org.xml.sax.ext;
                             org.xml.sax.helpers;
                             org.xml.sax;
