@@ -40,7 +40,7 @@ For example, the properties
 
 * `accertify_ipAddress=127.0.0.1`
 * `accertify_collectionTransaction->billingFirstName=John`
-* `orderDetails->orderDetail[0]->shippingName=John Doe`
+* `accertify_orderDetails->orderDetail[0]->shippingName=John Doe`
 
 will produce the following XML:
 
@@ -60,7 +60,7 @@ will produce the following XML:
 </transactions>
 ```
 
-By default, the plugin simply calls Accertify and store the response. Automatic rejection of the payments needs to be enabled on a per payment plugin basis.
+By default, the plugin simply calls Accertify and stores the response. Automatic rejection of the payments needs to be enabled on a per payment plugin basis.
 
 For example, if the plugins `killbill-cybersource`, `killbill-paypal-express` and `killbill-bitpay` are installed and you want to reject only payments going to CyberSource and PayPal, specify:
 
