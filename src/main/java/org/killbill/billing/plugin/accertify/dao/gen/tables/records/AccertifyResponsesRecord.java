@@ -16,7 +16,7 @@ package org.killbill.billing.plugin.accertify.dao.gen.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord> implements org.jooq.Record16<org.jooq.types.UInteger, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.math.BigDecimal, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.sql.Timestamp, java.lang.String> {
 
-	private static final long serialVersionUID = 217534969;
+	private static final long serialVersionUID = 1209784655;
 
 	/**
 	 * Setter for <code>killbill.accertify_responses.record_id</code>.
@@ -47,30 +47,30 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	}
 
 	/**
-	 * Setter for <code>killbill.accertify_responses.kb_payment_id</code>.
+	 * Setter for <code>killbill.accertify_responses.kb_payment_external_key</code>.
 	 */
-	public void setKbPaymentId(java.lang.String value) {
+	public void setKbPaymentExternalKey(java.lang.String value) {
 		setValue(2, value);
 	}
 
 	/**
-	 * Getter for <code>killbill.accertify_responses.kb_payment_id</code>.
+	 * Getter for <code>killbill.accertify_responses.kb_payment_external_key</code>.
 	 */
-	public java.lang.String getKbPaymentId() {
+	public java.lang.String getKbPaymentExternalKey() {
 		return (java.lang.String) getValue(2);
 	}
 
 	/**
-	 * Setter for <code>killbill.accertify_responses.kb_payment_transaction_id</code>.
+	 * Setter for <code>killbill.accertify_responses.kb_payment_transaction_external_key</code>.
 	 */
-	public void setKbPaymentTransactionId(java.lang.String value) {
+	public void setKbPaymentTransactionExternalKey(java.lang.String value) {
 		setValue(3, value);
 	}
 
 	/**
-	 * Getter for <code>killbill.accertify_responses.kb_payment_transaction_id</code>.
+	 * Getter for <code>killbill.accertify_responses.kb_payment_transaction_external_key</code>.
 	 */
-	public java.lang.String getKbPaymentTransactionId() {
+	public java.lang.String getKbPaymentTransactionExternalKey() {
 		return (java.lang.String) getValue(3);
 	}
 
@@ -295,7 +295,7 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	 */
 	@Override
 	public org.jooq.Field<java.lang.String> field3() {
-		return org.killbill.billing.plugin.accertify.dao.gen.tables.AccertifyResponses.ACCERTIFY_RESPONSES.KB_PAYMENT_ID;
+		return org.killbill.billing.plugin.accertify.dao.gen.tables.AccertifyResponses.ACCERTIFY_RESPONSES.KB_PAYMENT_EXTERNAL_KEY;
 	}
 
 	/**
@@ -303,7 +303,7 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	 */
 	@Override
 	public org.jooq.Field<java.lang.String> field4() {
-		return org.killbill.billing.plugin.accertify.dao.gen.tables.AccertifyResponses.ACCERTIFY_RESPONSES.KB_PAYMENT_TRANSACTION_ID;
+		return org.killbill.billing.plugin.accertify.dao.gen.tables.AccertifyResponses.ACCERTIFY_RESPONSES.KB_PAYMENT_TRANSACTION_EXTERNAL_KEY;
 	}
 
 	/**
@@ -423,7 +423,7 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	 */
 	@Override
 	public java.lang.String value3() {
-		return getKbPaymentId();
+		return getKbPaymentExternalKey();
 	}
 
 	/**
@@ -431,7 +431,7 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	 */
 	@Override
 	public java.lang.String value4() {
-		return getKbPaymentTransactionId();
+		return getKbPaymentTransactionExternalKey();
 	}
 
 	/**
@@ -553,7 +553,7 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	 */
 	@Override
 	public AccertifyResponsesRecord value3(java.lang.String value) {
-		setKbPaymentId(value);
+		setKbPaymentExternalKey(value);
 		return this;
 	}
 
@@ -562,7 +562,7 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	 */
 	@Override
 	public AccertifyResponsesRecord value4(java.lang.String value) {
-		setKbPaymentTransactionId(value);
+		setKbPaymentTransactionExternalKey(value);
 		return this;
 	}
 
@@ -696,13 +696,13 @@ public class AccertifyResponsesRecord extends org.jooq.impl.UpdatableRecordImpl<
 	/**
 	 * Create a detached, initialised AccertifyResponsesRecord
 	 */
-	public AccertifyResponsesRecord(org.jooq.types.UInteger recordId, java.lang.String kbAccountId, java.lang.String kbPaymentId, java.lang.String kbPaymentTransactionId, java.lang.String transactionType, java.math.BigDecimal amount, java.lang.String currency, java.lang.String transactionId, java.lang.String crossReference, java.lang.String rulesTripped, java.lang.String totalScore, java.lang.String recommendationCode, java.lang.String remarks, java.lang.String additionalData, java.sql.Timestamp createdDate, java.lang.String kbTenantId) {
+	public AccertifyResponsesRecord(org.jooq.types.UInteger recordId, java.lang.String kbAccountId, java.lang.String kbPaymentExternalKey, java.lang.String kbPaymentTransactionExternalKey, java.lang.String transactionType, java.math.BigDecimal amount, java.lang.String currency, java.lang.String transactionId, java.lang.String crossReference, java.lang.String rulesTripped, java.lang.String totalScore, java.lang.String recommendationCode, java.lang.String remarks, java.lang.String additionalData, java.sql.Timestamp createdDate, java.lang.String kbTenantId) {
 		super(org.killbill.billing.plugin.accertify.dao.gen.tables.AccertifyResponses.ACCERTIFY_RESPONSES);
 
 		setValue(0, recordId);
 		setValue(1, kbAccountId);
-		setValue(2, kbPaymentId);
-		setValue(3, kbPaymentTransactionId);
+		setValue(2, kbPaymentExternalKey);
+		setValue(3, kbPaymentTransactionExternalKey);
 		setValue(4, transactionType);
 		setValue(5, amount);
 		setValue(6, currency);

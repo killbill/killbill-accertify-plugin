@@ -104,8 +104,8 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
 
         try {
             dao.addResponse(context.getAccountId(),
-                            context.getPaymentId(),
-                            context.getTransactionId(),
+                            context.getPaymentExternalKey(),
+                            context.getTransactionExternalKey(),
                             context.getTransactionType(),
                             context.getAmount(),
                             context.getCurrency(),

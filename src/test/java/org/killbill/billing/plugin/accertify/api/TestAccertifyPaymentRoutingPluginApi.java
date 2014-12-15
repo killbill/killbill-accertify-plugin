@@ -108,7 +108,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
 
         final PriorPaymentRoutingResult routingResult = pluginApi.priorCall(routingContext, pluginProperties);
 
-        final List<AccertifyResponsesRecord> responses = dao.getResponses(routingContext.getPaymentId(), routingContext.getTenantId());
+        final List<AccertifyResponsesRecord> responses = dao.getResponses(routingContext.getPaymentExternalKey(), routingContext.getTenantId());
         Assert.assertEquals(responses.size(), 1);
         Assert.assertEquals(AccertifyPaymentRoutingPluginApi.ACCERTIFY_REJECT.equals(responses.get(0).getRecommendationCode()), routingResult.isAborted());
     }
@@ -125,7 +125,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
 
         final PriorPaymentRoutingResult routingResult = pluginApi.priorCall(routingContext, pluginProperties);
 
-        final List<AccertifyResponsesRecord> responses = dao.getResponses(routingContext.getPaymentId(), routingContext.getTenantId());
+        final List<AccertifyResponsesRecord> responses = dao.getResponses(routingContext.getPaymentExternalKey(), routingContext.getTenantId());
         Assert.assertEquals(responses.size(), 1);
         Assert.assertFalse(routingResult.isAborted());
     }
@@ -153,17 +153,17 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
 
     private PaymentRoutingContext buildPaymentRoutingContext(final UUID accountId, final Payment payment, final PaymentTransaction paymentTransaction) {
         // Need to initialize these for Mockito (mocks of mocks)
-        final UUID paymentId = payment.getId();
+        final String paymentExternalKey = payment.getExternalKey();
         final UUID paymentMethodId = payment.getPaymentMethodId();
-        final UUID paymentTransactionId = paymentTransaction.getId();
+        final String paymentTransactionExternalKey = paymentTransaction.getExternalKey();
         final TransactionType transactionType = paymentTransaction.getTransactionType();
         final BigDecimal amount = paymentTransaction.getAmount();
         final Currency currency = paymentTransaction.getCurrency();
 
         final PaymentRoutingContext routingContext = Mockito.mock(PaymentRoutingContext.class);
         Mockito.when(routingContext.getAccountId()).thenReturn(accountId);
-        Mockito.when(routingContext.getPaymentId()).thenReturn(paymentId);
-        Mockito.when(routingContext.getTransactionId()).thenReturn(paymentTransactionId);
+        Mockito.when(routingContext.getPaymentExternalKey()).thenReturn(paymentExternalKey);
+        Mockito.when(routingContext.getTransactionExternalKey()).thenReturn(paymentTransactionExternalKey);
         Mockito.when(routingContext.getTransactionType()).thenReturn(transactionType);
         Mockito.when(routingContext.getAmount()).thenReturn(amount);
         Mockito.when(routingContext.getCurrency()).thenReturn(currency);

@@ -16,7 +16,7 @@ package org.killbill.billing.plugin.accertify.dao.gen.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccertifyResponses extends org.jooq.impl.TableImpl<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord> {
 
-	private static final long serialVersionUID = 952293453;
+	private static final long serialVersionUID = 1710049665;
 
 	/**
 	 * The reference instance of <code>killbill.accertify_responses</code>
@@ -42,14 +42,14 @@ public class AccertifyResponses extends org.jooq.impl.TableImpl<org.killbill.bil
 	public final org.jooq.TableField<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord, java.lang.String> KB_ACCOUNT_ID = createField("kb_account_id", org.jooq.impl.SQLDataType.CHAR.length(36).nullable(false), this, "");
 
 	/**
-	 * The column <code>killbill.accertify_responses.kb_payment_id</code>.
+	 * The column <code>killbill.accertify_responses.kb_payment_external_key</code>.
 	 */
-	public final org.jooq.TableField<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord, java.lang.String> KB_PAYMENT_ID = createField("kb_payment_id", org.jooq.impl.SQLDataType.CHAR.length(36).nullable(false), this, "");
+	public final org.jooq.TableField<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord, java.lang.String> KB_PAYMENT_EXTERNAL_KEY = createField("kb_payment_external_key", org.jooq.impl.SQLDataType.CHAR.length(128).nullable(false), this, "");
 
 	/**
-	 * The column <code>killbill.accertify_responses.kb_payment_transaction_id</code>.
+	 * The column <code>killbill.accertify_responses.kb_payment_transaction_external_key</code>.
 	 */
-	public final org.jooq.TableField<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord, java.lang.String> KB_PAYMENT_TRANSACTION_ID = createField("kb_payment_transaction_id", org.jooq.impl.SQLDataType.CHAR.length(36).nullable(false), this, "");
+	public final org.jooq.TableField<org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord, java.lang.String> KB_PAYMENT_TRANSACTION_EXTERNAL_KEY = createField("kb_payment_transaction_external_key", org.jooq.impl.SQLDataType.CHAR.length(128).nullable(false), this, "");
 
 	/**
 	 * The column <code>killbill.accertify_responses.transaction_type</code>.

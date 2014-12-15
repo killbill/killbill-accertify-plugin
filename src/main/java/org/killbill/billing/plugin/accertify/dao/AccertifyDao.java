@@ -43,8 +43,8 @@ public class AccertifyDao extends PluginDao {
     }
 
     public void addResponse(final UUID kbAccountId,
-                            final UUID kbPaymentId,
-                            final UUID kbPaymentTransactionId,
+                            final String kbPaymentExternalKey,
+                            final String kbPaymentTransactionExternalKey,
                             final TransactionType transactionType,
                             final BigDecimal amount,
                             final Currency currency,
@@ -58,8 +58,8 @@ public class AccertifyDao extends PluginDao {
                         DSL.using(conn, dialect, settings)
                            .insertInto(ACCERTIFY_RESPONSES,
                                        ACCERTIFY_RESPONSES.KB_ACCOUNT_ID,
-                                       ACCERTIFY_RESPONSES.KB_PAYMENT_ID,
-                                       ACCERTIFY_RESPONSES.KB_PAYMENT_TRANSACTION_ID,
+                                       ACCERTIFY_RESPONSES.KB_PAYMENT_EXTERNAL_KEY,
+                                       ACCERTIFY_RESPONSES.KB_PAYMENT_TRANSACTION_EXTERNAL_KEY,
                                        ACCERTIFY_RESPONSES.TRANSACTION_TYPE,
                                        ACCERTIFY_RESPONSES.AMOUNT,
                                        ACCERTIFY_RESPONSES.CURRENCY,
@@ -73,8 +73,8 @@ public class AccertifyDao extends PluginDao {
                                        ACCERTIFY_RESPONSES.CREATED_DATE,
                                        ACCERTIFY_RESPONSES.KB_TENANT_ID)
                            .values(kbAccountId.toString(),
-                                   kbPaymentId.toString(),
-                                   kbPaymentTransactionId.toString(),
+                                   kbPaymentExternalKey,
+                                   kbPaymentTransactionExternalKey,
                                    transactionType.name(),
                                    amount,
                                    currency.name(),
@@ -93,14 +93,14 @@ public class AccertifyDao extends PluginDao {
                 });
     }
 
-    public List<AccertifyResponsesRecord> getResponses(final UUID kbPaymentId, final UUID kbTenantId) throws SQLException {
+    public List<AccertifyResponsesRecord> getResponses(final String kbPaymentExternalKey, final UUID kbTenantId) throws SQLException {
         return execute(dataSource.getConnection(),
                        new WithConnectionCallback<List<AccertifyResponsesRecord>>() {
                            @Override
                            public List<AccertifyResponsesRecord> withConnection(final Connection conn) throws SQLException {
                                return DSL.using(conn, dialect, settings)
                                          .selectFrom(ACCERTIFY_RESPONSES)
-                                         .where(ACCERTIFY_RESPONSES.KB_PAYMENT_ID.equal(kbPaymentId.toString()))
+                                         .where(ACCERTIFY_RESPONSES.KB_PAYMENT_EXTERNAL_KEY.equal(kbPaymentExternalKey))
                                          .and(ACCERTIFY_RESPONSES.KB_TENANT_ID.equal(kbTenantId.toString()))
                                          .orderBy(ACCERTIFY_RESPONSES.RECORD_ID.asc())
                                          .fetch();
