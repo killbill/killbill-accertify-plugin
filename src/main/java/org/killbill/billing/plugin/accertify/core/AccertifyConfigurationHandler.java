@@ -17,6 +17,7 @@
 
 package org.killbill.billing.plugin.accertify.core;
 
+import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 import org.killbill.billing.plugin.accertify.client.AccertifyClient;
@@ -34,6 +35,10 @@ public class AccertifyConfigurationHandler extends PluginTenantConfigurableConfi
 
     @Override
     protected AccertifyClient createConfigurable(final Properties properties) {
-        return new AccertifyClient(properties);
+        try {
+            return new AccertifyClient(properties);
+        } catch (final GeneralSecurityException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

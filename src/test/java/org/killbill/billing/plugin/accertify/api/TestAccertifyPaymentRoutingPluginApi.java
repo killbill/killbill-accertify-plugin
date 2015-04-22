@@ -19,6 +19,7 @@ package org.killbill.billing.plugin.accertify.api;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -139,7 +140,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
         }
     }
 
-    private void buildAccertifyClient() throws IOException {
+    private void buildAccertifyClient() throws IOException, GeneralSecurityException {
         client = new AccertifyConfigurationHandler(AccertifyActivator.PLUGIN_NAME, killbillApi, logService);
         final Properties properties = TestUtils.loadProperties(ACCERTIFY_PROPERTIES);
         final AccertifyClient globalAccertifyClient = new AccertifyClient(properties);
