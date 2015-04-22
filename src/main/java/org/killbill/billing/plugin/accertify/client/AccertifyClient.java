@@ -18,7 +18,6 @@
 package org.killbill.billing.plugin.accertify.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.SecureRandom;
@@ -36,6 +35,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.killbill.billing.plugin.accertify.core.AccertifyActivator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
@@ -170,15 +170,14 @@ public class AccertifyClient {
         return deserializeResponse(response, clazz);
     }
 
-    private <T> T deserializeResponse(final Response response, final Class<T> clazz) throws IOException {
-        InputStream in = null;
+    private <T> T deserializeResponse(final Response response, final Class<T> clazz) throws AccertifyClientException, IOException {
+        final String body = response.getResponseBody();
+
         try {
-            in = response.getResponseBodyAsStream();
-            return mapper.readValue(in, clazz);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
+            return mapper.readValue(body, clazz);
+        } catch (final JsonProcessingException e) {
+            final ErrorResponse errorResponse = mapper.readValue(body, ErrorResponse.class);
+            throw new AccertifyClientException("Accertify returned an error: " + errorResponse.getMessage());
         }
     }
 
@@ -233,6 +232,10 @@ public class AccertifyClient {
     }
 
     private String getAccertifyUrl(final String location, final String uri) throws URISyntaxException {
+        if (uri == null) {
+            throw new URISyntaxException("(null)", "AccertifyClient URL misconfigured");
+        }
+
         final URI u = new URI(uri);
         if (u.isAbsolute()) {
             return uri;
