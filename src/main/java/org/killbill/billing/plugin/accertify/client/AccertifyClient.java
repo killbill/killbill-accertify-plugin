@@ -49,15 +49,6 @@ public class AccertifyClient extends HttpClient {
               getBooleanProperty(properties, "strictSSL"));
     }
 
-    public AccertifyClient(final String url,
-                           final String username,
-                           final String password,
-                           final String proxyHost,
-                           final Integer proxyPort,
-                           final Boolean strictSSL) throws GeneralSecurityException {
-        super(url, username, password, proxyHost, proxyPort, strictSSL);
-    }
-
     @Override
     protected ObjectMapper createObjectMapper() {
         return XmlMapperProvider.get();

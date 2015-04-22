@@ -47,14 +47,7 @@ public class AccertifyActivator extends KillbillActivatorBase {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
 
-        final String proxyPortString = configProperties.getString(PROPERTY_PREFIX + "proxyPort");
-        final String strictSSLString = configProperties.getString(PROPERTY_PREFIX + "strictSSL");
-        final AccertifyClient globalAccertifyClient = new AccertifyClient(configProperties.getString(PROPERTY_PREFIX + "url"),
-                                                                          configProperties.getString(PROPERTY_PREFIX + "username"),
-                                                                          configProperties.getString(PROPERTY_PREFIX + "password"),
-                                                                          configProperties.getString(PROPERTY_PREFIX + "proxyHost"),
-                                                                          Strings.isNullOrEmpty(proxyPortString) ? null : Integer.valueOf(proxyPortString),
-                                                                          Strings.isNullOrEmpty(strictSSLString) ? true : Boolean.valueOf(strictSSLString));
+        final AccertifyClient globalAccertifyClient = new AccertifyClient(configProperties.getProperties());
         accertifyConfigurationHandler.setDefaultConfigurable(globalAccertifyClient);
 
         // Configurable globally only
