@@ -1,6 +1,6 @@
 /*
- * Copyright 2014 Groupon, Inc
- * Copyright 2014 The Billing Project, LLC
+ * Copyright 2014-2015 Groupon, Inc
+ * Copyright 2014-2015 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -24,6 +24,7 @@ import org.killbill.billing.osgi.api.OSGIPluginProperties;
 import org.killbill.billing.plugin.accertify.api.AccertifyPaymentRoutingPluginApi;
 import org.killbill.billing.plugin.accertify.client.AccertifyClient;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
+import org.killbill.billing.plugin.api.notification.PluginConfigurationEventHandler;
 import org.killbill.billing.routing.plugin.api.PaymentRoutingPluginApi;
 import org.killbill.clock.Clock;
 import org.killbill.clock.DefaultClock;
@@ -40,20 +41,23 @@ public class AccertifyActivator extends KillbillActivatorBase {
 
     public static final String PROPERTY_PREFIX = "org.killbill.billing.plugin.accertify.";
 
+    private AccertifyConfigurationHandler accertifyConfigurationHandler;
+
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
 
         final String proxyPortString = configProperties.getString(PROPERTY_PREFIX + "proxyPort");
         final String strictSSLString = configProperties.getString(PROPERTY_PREFIX + "strictSSL");
-        final AccertifyClient accertifyClient = new AccertifyClient(configProperties.getString(PROPERTY_PREFIX + "url"),
-                                                                    configProperties.getString(PROPERTY_PREFIX + "username"),
-                                                                    configProperties.getString(PROPERTY_PREFIX + "password"),
-                                                                    configProperties.getString(PROPERTY_PREFIX + "proxyHost"),
-                                                                    Strings.isNullOrEmpty(proxyPortString) ? null : Integer.valueOf(proxyPortString),
-                                                                    Strings.isNullOrEmpty(strictSSLString) ? true : Boolean.valueOf(strictSSLString));
+        final AccertifyClient globalAccertifyClient = new AccertifyClient(configProperties.getString(PROPERTY_PREFIX + "url"),
+                                                                          configProperties.getString(PROPERTY_PREFIX + "username"),
+                                                                          configProperties.getString(PROPERTY_PREFIX + "password"),
+                                                                          configProperties.getString(PROPERTY_PREFIX + "proxyHost"),
+                                                                          Strings.isNullOrEmpty(proxyPortString) ? null : Integer.valueOf(proxyPortString),
+                                                                          Strings.isNullOrEmpty(strictSSLString) ? true : Boolean.valueOf(strictSSLString));
+        accertifyConfigurationHandler.setDefaultConfigurable(globalAccertifyClient);
 
-
+        // Configurable globally only
         final String paymentPluginsString = configProperties.getString(PROPERTY_PREFIX + "plugins");
         final String[] paymentPlugins = Strings.isNullOrEmpty(paymentPluginsString) ? new String[]{} : paymentPluginsString.split(",");
         final Collection<String> paymentPluginsSubjectToAutomaticRejection = ImmutableList.<String>copyOf(paymentPlugins);
@@ -64,7 +68,7 @@ public class AccertifyActivator extends KillbillActivatorBase {
         // Register the PaymentControlPluginApi
         final PaymentRoutingPluginApi paymentControlPluginApi = new AccertifyPaymentRoutingPluginApi(paymentPluginsSubjectToAutomaticRejection,
                                                                                                      dao,
-                                                                                                     accertifyClient,
+                                                                                                     accertifyConfigurationHandler,
                                                                                                      killbillAPI,
                                                                                                      configProperties,
                                                                                                      logService,
@@ -74,7 +78,8 @@ public class AccertifyActivator extends KillbillActivatorBase {
 
     @Override
     public OSGIKillbillEventDispatcher.OSGIKillbillEventHandler getOSGIKillbillEventHandler() {
-        return null;
+        accertifyConfigurationHandler = new AccertifyConfigurationHandler(PLUGIN_NAME, killbillAPI, logService);
+        return new PluginConfigurationEventHandler(accertifyConfigurationHandler);
     }
 
     private void registerPaymentControlPluginApi(final BundleContext context, final PaymentRoutingPluginApi api) {

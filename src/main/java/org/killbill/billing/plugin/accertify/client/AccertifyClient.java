@@ -1,6 +1,6 @@
 /*
- * Copyright 2014 Groupon, Inc
- * Copyright 2014 The Billing Project, LLC
+ * Copyright 2014-2015 Groupon, Inc
+ * Copyright 2014-2015 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -25,6 +25,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -33,7 +34,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.killbill.billing.plugin.accertify.core.AccertifyActivator;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.HttpHeaders;
 import com.ning.http.client.AsyncCompletionHandler;
@@ -59,13 +63,29 @@ public class AccertifyClient {
     private static final ImmutableMap<String, String> DEFAULT_OPTIONS = ImmutableMap.<String, String>of();
     private static final int DEFAULT_HTTP_TIMEOUT_SEC = 10;
 
+    private final String url;
     private final String username;
     private final String password;
-    private final String url;
     private final String proxyHost;
     private final Integer proxyPort;
-    private final XmlMapper mapper;
-    private final AsyncHttpClient httpClient;
+
+    private XmlMapper mapper;
+    private AsyncHttpClient httpClient;
+
+    public AccertifyClient(final Properties properties) {
+        this.url = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "url");
+        this.username = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "username");
+        this.password = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "password");
+        this.proxyHost = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "proxyHost");
+
+        final String proxyPortString = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "proxyPort");
+        this.proxyPort = Strings.isNullOrEmpty(proxyPortString) ? null : Integer.valueOf(proxyPortString);
+
+        final String strictSSLString = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "strictSSL");
+        final Boolean strictSSL = Strings.isNullOrEmpty(strictSSLString) ? true : Boolean.valueOf(strictSSLString);
+
+        initialize(strictSSL);
+    }
 
     public AccertifyClient(final String url,
                            final String username,
@@ -79,6 +99,10 @@ public class AccertifyClient {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
 
+        initialize(strictSSL);
+    }
+
+    private void initialize(Boolean strictSSL) {
         this.mapper = XmlMapperProvider.get();
 
         final AsyncHttpClientConfig.Builder cfg = new AsyncHttpClientConfig.Builder();

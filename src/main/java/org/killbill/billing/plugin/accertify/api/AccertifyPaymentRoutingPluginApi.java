@@ -1,6 +1,6 @@
 /*
- * Copyright 2014 Groupon, Inc
- * Copyright 2014 The Billing Project, LLC
+ * Copyright 2014-2015 Groupon, Inc
+ * Copyright 2014-2015 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 
 import org.killbill.billing.payment.api.PaymentMethod;
 import org.killbill.billing.payment.api.PluginProperty;
-import org.killbill.billing.plugin.accertify.client.AccertifyClient;
 import org.killbill.billing.plugin.accertify.client.AccertifyClientException;
 import org.killbill.billing.plugin.accertify.client.RequestBuilder;
 import org.killbill.billing.plugin.accertify.client.TransactionResults;
+import org.killbill.billing.plugin.accertify.core.AccertifyConfigurationHandler;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
 import org.killbill.billing.plugin.api.routing.PluginPaymentRoutingPluginApi;
 import org.killbill.billing.routing.plugin.api.PaymentRoutingApiException;
@@ -53,11 +53,11 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
 
     private final Collection<String> paymentPluginsSubjectToAutomaticRejection;
     private final AccertifyDao dao;
-    private final AccertifyClient client;
+    private final AccertifyConfigurationHandler accertifyConfigurationHandler;
 
     public AccertifyPaymentRoutingPluginApi(final Collection<String> paymentPluginsSubjectToAutomaticRejection,
                                             final AccertifyDao dao,
-                                            final AccertifyClient client,
+                                            final AccertifyConfigurationHandler accertifyConfigurationHandler,
                                             final OSGIKillbillAPI killbillApi,
                                             final OSGIConfigPropertiesService configProperties,
                                             final OSGIKillbillLogService logService,
@@ -65,7 +65,7 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
         super(killbillApi, configProperties, logService, clock);
         this.paymentPluginsSubjectToAutomaticRejection = paymentPluginsSubjectToAutomaticRejection;
         this.dao = dao;
-        this.client = client;
+        this.accertifyConfigurationHandler = accertifyConfigurationHandler;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
 
         TransactionResults transactionResults = null;
         try {
-            transactionResults = client.assess(transactions);
+            transactionResults = accertifyConfigurationHandler.getConfigurable(context.getTenantId()).assess(transactions);
             logger.info("Accertify {} recommendation: kbPaymentTransactionId={}, total-score={}, rules-tripped={}, remarks={}",
                         transactionResults.getRecommendationCode(),
                         context.getTransactionId(),

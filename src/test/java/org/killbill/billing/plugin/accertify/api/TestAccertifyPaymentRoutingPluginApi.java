@@ -1,6 +1,6 @@
 /*
- * Copyright 2014 Groupon, Inc
- * Copyright 2014 The Billing Project, LLC
+ * Copyright 2014-2015 Groupon, Inc
+ * Copyright 2014-2015 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -36,6 +36,7 @@ import org.killbill.billing.plugin.TestUtils;
 import org.killbill.billing.plugin.TestWithEmbeddedDBBase;
 import org.killbill.billing.plugin.accertify.client.AccertifyClient;
 import org.killbill.billing.plugin.accertify.core.AccertifyActivator;
+import org.killbill.billing.plugin.accertify.core.AccertifyConfigurationHandler;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
 import org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord;
 import org.killbill.billing.routing.plugin.api.PaymentRoutingContext;
@@ -50,7 +51,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 // To run these tests, you need two properties files in the classpath (e.g. src/test/resources/accertify.properties):
@@ -64,7 +64,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
 
     private Collection<String> paymentPluginsSubjectToAutomaticRejection;
     private AccertifyDao dao;
-    private AccertifyClient client;
+    private AccertifyConfigurationHandler client;
     private OSGIKillbillAPI killbillApi;
     private OSGIConfigPropertiesService configProperties;
     private OSGIKillbillLogService logService;
@@ -140,15 +140,10 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
     }
 
     private void buildAccertifyClient() throws IOException {
+        client = new AccertifyConfigurationHandler(AccertifyActivator.PLUGIN_NAME, killbillApi, logService);
         final Properties properties = TestUtils.loadProperties(ACCERTIFY_PROPERTIES);
-        final String proxyPortString = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "proxyPort");
-        final String strictSSLString = properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "strictSSL");
-        client = new AccertifyClient(properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "url"),
-                                     properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "username"),
-                                     properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "password"),
-                                     properties.getProperty(AccertifyActivator.PROPERTY_PREFIX + "proxyHost"),
-                                     Strings.isNullOrEmpty(proxyPortString) ? null : Integer.valueOf(proxyPortString),
-                                     Strings.isNullOrEmpty(strictSSLString) ? true : Boolean.valueOf(strictSSLString));
+        final AccertifyClient globalAccertifyClient = new AccertifyClient(properties);
+        client.setDefaultConfigurable(globalAccertifyClient);
     }
 
     private PaymentRoutingContext buildPaymentRoutingContext(final UUID accountId, final Payment payment, final PaymentTransaction paymentTransaction) {
