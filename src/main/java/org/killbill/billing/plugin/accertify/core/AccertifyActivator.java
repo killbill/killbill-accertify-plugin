@@ -47,7 +47,7 @@ public class AccertifyActivator extends KillbillActivatorBase {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
 
-        final AccertifyClient globalAccertifyClient = new AccertifyClient(configProperties.getProperties());
+        final AccertifyClient globalAccertifyClient = accertifyConfigurationHandler.createConfigurable(configProperties.getProperties());
         accertifyConfigurationHandler.setDefaultConfigurable(globalAccertifyClient);
 
         // Configurable globally only
