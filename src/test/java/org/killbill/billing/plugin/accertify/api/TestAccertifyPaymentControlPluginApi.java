@@ -28,6 +28,8 @@ import java.util.UUID;
 
 import org.killbill.billing.account.api.Account;
 import org.killbill.billing.catalog.api.Currency;
+import org.killbill.billing.control.plugin.api.PaymentControlContext;
+import org.killbill.billing.control.plugin.api.PriorPaymentControlResult;
 import org.killbill.billing.payment.api.Payment;
 import org.killbill.billing.payment.api.PaymentMethod;
 import org.killbill.billing.payment.api.PaymentTransaction;
@@ -40,8 +42,6 @@ import org.killbill.billing.plugin.accertify.core.AccertifyActivator;
 import org.killbill.billing.plugin.accertify.core.AccertifyConfigurationHandler;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
 import org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord;
-import org.killbill.billing.routing.plugin.api.PaymentRoutingContext;
-import org.killbill.billing.routing.plugin.api.PriorPaymentRoutingResult;
 import org.killbill.clock.Clock;
 import org.killbill.clock.DefaultClock;
 import org.killbill.killbill.osgi.libs.killbill.OSGIConfigPropertiesService;
@@ -58,7 +58,7 @@ import com.google.common.collect.ImmutableList;
 // * accertify.properties with your Accertify credentials
 // * payload.properties with plugin properties matching your XML schema
 // See README.md for details on the required properties
-public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase {
+public class TestAccertifyPaymentControlPluginApi extends TestWithEmbeddedDBBase {
 
     private static final String ACCERTIFY_PROPERTIES = "accertify.properties";
     private static final String PAYLOAD_RESOURCE = "payload.properties";
@@ -70,7 +70,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
     private OSGIConfigPropertiesService configProperties;
     private OSGIKillbillLogService logService;
     private Clock clock;
-    private PaymentRoutingContext routingContext;
+    private PaymentControlContext routingContext;
     private List<PluginProperty> pluginProperties;
 
     @BeforeMethod(groups = "slow")
@@ -92,14 +92,14 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
 
         buildAccertifyClient();
 
-        routingContext = buildPaymentRoutingContext(accountId, payment, paymentTransaction);
+        routingContext = buildPaymentControlContext(accountId, payment, paymentTransaction);
 
         buildPluginProperties();
     }
 
     @Test(groups = "slow")
     public void testIntegrationWithPluginMatch() throws Exception {
-        final AccertifyPaymentRoutingPluginApi pluginApi = new AccertifyPaymentRoutingPluginApi(paymentPluginsSubjectToAutomaticRejection,
+        final AccertifyPaymentControlPluginApi pluginApi = new AccertifyPaymentControlPluginApi(paymentPluginsSubjectToAutomaticRejection,
                                                                                                 dao,
                                                                                                 client,
                                                                                                 killbillApi,
@@ -107,16 +107,16 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
                                                                                                 logService,
                                                                                                 clock);
 
-        final PriorPaymentRoutingResult routingResult = pluginApi.priorCall(routingContext, pluginProperties);
+        final PriorPaymentControlResult routingResult = pluginApi.priorCall(routingContext, pluginProperties);
 
         final List<AccertifyResponsesRecord> responses = dao.getResponses(routingContext.getPaymentExternalKey(), routingContext.getTenantId());
         Assert.assertEquals(responses.size(), 1);
-        Assert.assertEquals(AccertifyPaymentRoutingPluginApi.ACCERTIFY_REJECT.equals(responses.get(0).getRecommendationCode()), routingResult.isAborted());
+        Assert.assertEquals(AccertifyPaymentControlPluginApi.ACCERTIFY_REJECT.equals(responses.get(0).getRecommendationCode()), routingResult.isAborted());
     }
 
     @Test(groups = "slow")
     public void testIntegrationWithoutPluginMatch() throws Exception {
-        final AccertifyPaymentRoutingPluginApi pluginApi = new AccertifyPaymentRoutingPluginApi(ImmutableList.<String>of(),
+        final AccertifyPaymentControlPluginApi pluginApi = new AccertifyPaymentControlPluginApi(ImmutableList.<String>of(),
                                                                                                 dao,
                                                                                                 client,
                                                                                                 killbillApi,
@@ -124,7 +124,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
                                                                                                 logService,
                                                                                                 clock);
 
-        final PriorPaymentRoutingResult routingResult = pluginApi.priorCall(routingContext, pluginProperties);
+        final PriorPaymentControlResult routingResult = pluginApi.priorCall(routingContext, pluginProperties);
 
         final List<AccertifyResponsesRecord> responses = dao.getResponses(routingContext.getPaymentExternalKey(), routingContext.getTenantId());
         Assert.assertEquals(responses.size(), 1);
@@ -147,7 +147,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
         client.setDefaultConfigurable(globalAccertifyClient);
     }
 
-    private PaymentRoutingContext buildPaymentRoutingContext(final UUID accountId, final Payment payment, final PaymentTransaction paymentTransaction) {
+    private PaymentControlContext buildPaymentControlContext(final UUID accountId, final Payment payment, final PaymentTransaction paymentTransaction) {
         // Need to initialize these for Mockito (mocks of mocks)
         final String paymentExternalKey = payment.getExternalKey();
         final UUID paymentMethodId = payment.getPaymentMethodId();
@@ -156,7 +156,7 @@ public class TestAccertifyPaymentRoutingPluginApi extends TestWithEmbeddedDBBase
         final BigDecimal amount = paymentTransaction.getAmount();
         final Currency currency = paymentTransaction.getCurrency();
 
-        final PaymentRoutingContext routingContext = Mockito.mock(PaymentRoutingContext.class);
+        final PaymentControlContext routingContext = Mockito.mock(PaymentControlContext.class);
         Mockito.when(routingContext.getAccountId()).thenReturn(accountId);
         Mockito.when(routingContext.getPaymentExternalKey()).thenReturn(paymentExternalKey);
         Mockito.when(routingContext.getTransactionExternalKey()).thenReturn(paymentTransactionExternalKey);

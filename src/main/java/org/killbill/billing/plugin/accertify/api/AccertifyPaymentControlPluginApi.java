@@ -22,6 +22,9 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.killbill.billing.control.plugin.api.PaymentControlApiException;
+import org.killbill.billing.control.plugin.api.PaymentControlContext;
+import org.killbill.billing.control.plugin.api.PriorPaymentControlResult;
 import org.killbill.billing.payment.api.PaymentMethod;
 import org.killbill.billing.payment.api.PluginProperty;
 import org.killbill.billing.plugin.accertify.client.AccertifyClientException;
@@ -29,10 +32,7 @@ import org.killbill.billing.plugin.accertify.client.RequestBuilder;
 import org.killbill.billing.plugin.accertify.client.TransactionResults;
 import org.killbill.billing.plugin.accertify.core.AccertifyConfigurationHandler;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
-import org.killbill.billing.plugin.api.routing.PluginPaymentRoutingPluginApi;
-import org.killbill.billing.routing.plugin.api.PaymentRoutingApiException;
-import org.killbill.billing.routing.plugin.api.PaymentRoutingContext;
-import org.killbill.billing.routing.plugin.api.PriorPaymentRoutingResult;
+import org.killbill.billing.plugin.api.control.PluginPaymentControlPluginApi;
 import org.killbill.clock.Clock;
 import org.killbill.killbill.osgi.libs.killbill.OSGIConfigPropertiesService;
 import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillAPI;
@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPluginApi {
+public class AccertifyPaymentControlPluginApi extends PluginPaymentControlPluginApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccertifyPaymentRoutingPluginApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccertifyPaymentControlPluginApi.class);
 
     private static final Pattern ACCERTIFY_PROPERTIES_PATTERN = Pattern.compile("accertify_(.*)");
 
@@ -55,7 +55,7 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
     private final AccertifyDao dao;
     private final AccertifyConfigurationHandler accertifyConfigurationHandler;
 
-    public AccertifyPaymentRoutingPluginApi(final Collection<String> paymentPluginsSubjectToAutomaticRejection,
+    public AccertifyPaymentControlPluginApi(final Collection<String> paymentPluginsSubjectToAutomaticRejection,
                                             final AccertifyDao dao,
                                             final AccertifyConfigurationHandler accertifyConfigurationHandler,
                                             final OSGIKillbillAPI killbillApi,
@@ -69,7 +69,7 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
     }
 
     @Override
-    public PriorPaymentRoutingResult priorCall(final PaymentRoutingContext context, final Iterable<PluginProperty> properties) throws PaymentRoutingApiException {
+    public PriorPaymentControlResult priorCall(final PaymentControlContext context, final Iterable<PluginProperty> properties) throws PaymentControlApiException {
         // Check with Accertify
         final boolean shouldReject = assess(context, properties);
         // Check if we should automatically reject the payment
@@ -77,10 +77,10 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
 
         final boolean shouldAbortPayment = shouldReject && shouldHonorAccertify;
         logger.info("Accertify result: shouldAbortPayment={} (shouldReject={}, shouldHonorAccertify={})", shouldAbortPayment, shouldReject, shouldHonorAccertify);
-        return new AccertifyPriorPaymentRoutingResult(shouldAbortPayment, context);
+        return new AccertifyPriorPaymentControlResult(shouldAbortPayment, context);
     }
 
-    private boolean assess(final PaymentRoutingContext context, final Iterable<PluginProperty> properties) {
+    private boolean assess(final PaymentControlContext context, final Iterable<PluginProperty> properties) {
         final String transactions;
         try {
             transactions = createAccertifyTransactions(properties);
@@ -133,7 +133,7 @@ public class AccertifyPaymentRoutingPluginApi extends PluginPaymentRoutingPlugin
         return requestBuilder.build();
     }
 
-    private boolean shouldHonorAccertify(final PaymentRoutingContext context) {
+    private boolean shouldHonorAccertify(final PaymentControlContext context) {
         final PaymentMethod paymentMethod = getPaymentMethod(context.getPaymentMethodId(), context);
         return paymentPluginsSubjectToAutomaticRejection.contains(paymentMethod.getPluginName());
     }

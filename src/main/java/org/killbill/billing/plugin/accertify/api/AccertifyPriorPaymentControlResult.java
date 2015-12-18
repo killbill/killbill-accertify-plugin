@@ -1,6 +1,6 @@
 /*
- * Copyright 2014 Groupon, Inc
- * Copyright 2014 The Billing Project, LLC
+ * Copyright 2014-2015 Groupon, Inc
+ * Copyright 2014-2015 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -17,7 +17,12 @@
 
 package org.killbill.billing.plugin.accertify.api;
 
-import org.killbill.billing.plugin.api.routing.PluginOnSuccessPaymentRoutingResult;
+import org.killbill.billing.control.plugin.api.PaymentControlContext;
+import org.killbill.billing.plugin.api.control.PluginPriorPaymentControlResult;
 
-public class AccertifyOnSuccessPaymentRoutingResult extends PluginOnSuccessPaymentRoutingResult {
+public class AccertifyPriorPaymentControlResult extends PluginPriorPaymentControlResult {
+
+    public AccertifyPriorPaymentControlResult(final boolean isAborted, final PaymentControlContext context) {
+        super(isAborted, context);
+    }
 }

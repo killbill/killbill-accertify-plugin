@@ -20,7 +20,7 @@
     <parent>
         <artifactId>killbill-oss-parent</artifactId>
         <groupId>org.kill-bill.billing</groupId>
-        <version>0.11</version>
+        <version>0.77</version>
     </parent>
     <groupId>org.kill-bill.billing.plugin.java</groupId>
     <artifactId>accertify-plugin</artifactId>
@@ -119,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>org.kill-bill.billing.plugin</groupId>
-            <artifactId>killbill-plugin-api-routing</artifactId>
+            <artifactId>killbill-plugin-api-control</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -184,7 +184,8 @@
                         <Export-Package />
                         <Private-Package>org.killbill.billing.plugin.accertify.*</Private-Package>
                         <!-- Optional resolution because exported by the Felix system bundle -->
-                        <Import-Package>org.killbill.billing.account.api;
+                        <Import-Package>
+                            org.killbill.billing.account.api;
                             org.killbill.billing.catalog.api;
                             org.killbill.billing.invoice.api;
                             org.killbill.billing.entitlement.api;
@@ -195,7 +196,7 @@
                             org.killbill.billing.osgi.api.config;
                             org.killbill.billing.payment.api;
                             org.killbill.billing.payment.plugin.api;
-                            org.killbill.billing.routing.plugin.api;
+                            org.killbill.billing.control.plugin.api;
                             org.killbill.billing.tenant.api;
                             org.killbill.billing.usage.api;
                             org.killbill.billing.util.api;
@@ -242,6 +243,7 @@
                             javax.naming.ldap;
                             javax.naming.spi;
                             javax.naming;
+                            org.osgi.service.log;
                             version="[0,3)",
                             *;resolution:=optional</Import-Package>
                     </instructions>

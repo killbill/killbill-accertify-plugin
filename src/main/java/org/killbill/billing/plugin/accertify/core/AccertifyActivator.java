@@ -20,12 +20,12 @@ package org.killbill.billing.plugin.accertify.core;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import org.killbill.billing.control.plugin.api.PaymentControlPluginApi;
 import org.killbill.billing.osgi.api.OSGIPluginProperties;
-import org.killbill.billing.plugin.accertify.api.AccertifyPaymentRoutingPluginApi;
+import org.killbill.billing.plugin.accertify.api.AccertifyPaymentControlPluginApi;
 import org.killbill.billing.plugin.accertify.client.AccertifyClient;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
 import org.killbill.billing.plugin.api.notification.PluginConfigurationEventHandler;
-import org.killbill.billing.routing.plugin.api.PaymentRoutingPluginApi;
 import org.killbill.clock.Clock;
 import org.killbill.clock.DefaultClock;
 import org.killbill.killbill.osgi.libs.killbill.KillbillActivatorBase;
@@ -59,7 +59,7 @@ public class AccertifyActivator extends KillbillActivatorBase {
         final Clock clock = new DefaultClock();
 
         // Register the PaymentControlPluginApi
-        final PaymentRoutingPluginApi paymentControlPluginApi = new AccertifyPaymentRoutingPluginApi(paymentPluginsSubjectToAutomaticRejection,
+        final PaymentControlPluginApi paymentControlPluginApi = new AccertifyPaymentControlPluginApi(paymentPluginsSubjectToAutomaticRejection,
                                                                                                      dao,
                                                                                                      accertifyConfigurationHandler,
                                                                                                      killbillAPI,
@@ -75,9 +75,9 @@ public class AccertifyActivator extends KillbillActivatorBase {
         return new PluginConfigurationEventHandler(accertifyConfigurationHandler);
     }
 
-    private void registerPaymentControlPluginApi(final BundleContext context, final PaymentRoutingPluginApi api) {
+    private void registerPaymentControlPluginApi(final BundleContext context, final PaymentControlPluginApi api) {
         final Hashtable<String, String> props = new Hashtable<String, String>();
         props.put(OSGIPluginProperties.PLUGIN_NAME_PROP, PLUGIN_NAME);
-        registrar.registerService(context, PaymentRoutingPluginApi.class, api, props);
+        registrar.registerService(context, PaymentControlPluginApi.class, api, props);
     }
 }
