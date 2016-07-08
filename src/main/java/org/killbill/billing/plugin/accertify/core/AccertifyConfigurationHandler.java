@@ -20,10 +20,10 @@ package org.killbill.billing.plugin.accertify.core;
 import java.security.GeneralSecurityException;
 import java.util.Properties;
 
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillAPI;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.killbill.billing.plugin.accertify.client.AccertifyClient;
 import org.killbill.billing.plugin.api.notification.PluginTenantConfigurableConfigurationHandler;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillAPI;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillLogService;
 
 public class AccertifyConfigurationHandler extends PluginTenantConfigurableConfigurationHandler<AccertifyClient> {
 

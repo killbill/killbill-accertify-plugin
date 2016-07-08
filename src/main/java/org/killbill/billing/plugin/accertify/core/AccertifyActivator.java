@@ -17,23 +17,21 @@
 
 package org.killbill.billing.plugin.accertify.core;
 
-import java.util.Collection;
-import java.util.Hashtable;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import org.killbill.billing.control.plugin.api.PaymentControlPluginApi;
 import org.killbill.billing.osgi.api.OSGIPluginProperties;
+import org.killbill.billing.osgi.libs.killbill.KillbillActivatorBase;
 import org.killbill.billing.plugin.accertify.api.AccertifyPaymentControlPluginApi;
 import org.killbill.billing.plugin.accertify.client.AccertifyClient;
 import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
 import org.killbill.billing.plugin.api.notification.PluginConfigurationEventHandler;
 import org.killbill.clock.Clock;
 import org.killbill.clock.DefaultClock;
-import org.killbill.killbill.osgi.libs.killbill.KillbillActivatorBase;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillEventDispatcher;
 import org.osgi.framework.BundleContext;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
+import java.util.Collection;
+import java.util.Hashtable;
 
 public class AccertifyActivator extends KillbillActivatorBase {
 
@@ -60,19 +58,21 @@ public class AccertifyActivator extends KillbillActivatorBase {
 
         // Register the PaymentControlPluginApi
         final PaymentControlPluginApi paymentControlPluginApi = new AccertifyPaymentControlPluginApi(paymentPluginsSubjectToAutomaticRejection,
-                                                                                                     dao,
-                                                                                                     accertifyConfigurationHandler,
-                                                                                                     killbillAPI,
-                                                                                                     configProperties,
-                                                                                                     logService,
-                                                                                                     clock);
+                dao,
+                accertifyConfigurationHandler,
+                killbillAPI,
+                configProperties,
+                logService,
+                clock);
         registerPaymentControlPluginApi(context, paymentControlPluginApi);
+
+        registerEventHandler();
     }
 
-    @Override
-    public OSGIKillbillEventDispatcher.OSGIKillbillEventHandler getOSGIKillbillEventHandler() {
-        accertifyConfigurationHandler = new AccertifyConfigurationHandler(PLUGIN_NAME, killbillAPI, logService);
-        return new PluginConfigurationEventHandler(accertifyConfigurationHandler);
+    private void registerEventHandler() {
+        final AccertifyConfigurationHandler handler = accertifyConfigurationHandler = new AccertifyConfigurationHandler(PLUGIN_NAME, killbillAPI, logService);
+        dispatcher.registerEventHandlers(new PluginConfigurationEventHandler(handler));
+
     }
 
     private void registerPaymentControlPluginApi(final BundleContext context, final PaymentControlPluginApi api) {

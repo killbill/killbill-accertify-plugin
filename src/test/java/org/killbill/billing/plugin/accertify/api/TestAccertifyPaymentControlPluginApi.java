@@ -30,6 +30,9 @@ import org.killbill.billing.account.api.Account;
 import org.killbill.billing.catalog.api.Currency;
 import org.killbill.billing.control.plugin.api.PaymentControlContext;
 import org.killbill.billing.control.plugin.api.PriorPaymentControlResult;
+import org.killbill.billing.osgi.libs.killbill.OSGIConfigPropertiesService;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillAPI;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.killbill.billing.payment.api.Payment;
 import org.killbill.billing.payment.api.PaymentMethod;
 import org.killbill.billing.payment.api.PaymentTransaction;
@@ -44,9 +47,6 @@ import org.killbill.billing.plugin.accertify.dao.AccertifyDao;
 import org.killbill.billing.plugin.accertify.dao.gen.tables.records.AccertifyResponsesRecord;
 import org.killbill.clock.Clock;
 import org.killbill.clock.DefaultClock;
-import org.killbill.killbill.osgi.libs.killbill.OSGIConfigPropertiesService;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillAPI;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillLogService;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -82,7 +82,7 @@ public class TestAccertifyPaymentControlPluginApi extends TestWithEmbeddedDBBase
         final Payment payment = TestUtils.buildPayment(accountId, account.getPaymentMethodId(), account.getCurrency());
         final PaymentTransaction paymentTransaction = TestUtils.buildPaymentTransaction(payment, TransactionType.AUTHORIZE, payment.getCurrency());
         final PaymentMethod paymentMethod = TestUtils.buildPaymentMethod(accountId, account.getPaymentMethodId(), paymentPluginName);
-        killbillApi = TestUtils.buildOSGIKillbillAPI(account, payment, paymentMethod);
+        killbillApi = TestUtils.buildOSGIKillbillAPI(account);
 
         paymentPluginsSubjectToAutomaticRejection = ImmutableList.<String>of(paymentPluginName);
         dao = new AccertifyDao(embeddedDB.getDataSource());
