@@ -79,10 +79,12 @@ public class TestAccertifyPaymentControlPluginApi extends TestWithEmbeddedDBBase
 
         final Account account = TestUtils.buildAccount(Currency.USD, "US");
         final UUID accountId = account.getId();
-        final Payment payment = TestUtils.buildPayment(accountId, account.getPaymentMethodId(), account.getCurrency());
-        final PaymentTransaction paymentTransaction = TestUtils.buildPaymentTransaction(payment, TransactionType.AUTHORIZE, payment.getCurrency());
-        final PaymentMethod paymentMethod = TestUtils.buildPaymentMethod(accountId, account.getPaymentMethodId(), paymentPluginName);
+
         killbillApi = TestUtils.buildOSGIKillbillAPI(account);
+
+        final Payment payment = TestUtils.buildPayment(accountId, account.getPaymentMethodId(), account.getCurrency(), killbillApi);
+        final PaymentTransaction paymentTransaction = TestUtils.buildPaymentTransaction(payment, TransactionType.AUTHORIZE, payment.getCurrency());
+        final PaymentMethod paymentMethod = TestUtils.buildPaymentMethod(accountId, account.getPaymentMethodId(), paymentPluginName, killbillApi);
 
         paymentPluginsSubjectToAutomaticRejection = ImmutableList.<String>of(paymentPluginName);
         dao = new AccertifyDao(embeddedDB.getDataSource());
