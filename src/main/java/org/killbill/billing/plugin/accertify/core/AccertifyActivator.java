@@ -1,6 +1,6 @@
 /*
- * Copyright 2014-2015 Groupon, Inc
- * Copyright 2014-2015 The Billing Project, LLC
+ * Copyright 2014-2016 Groupon, Inc
+ * Copyright 2014-2016 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -17,8 +17,9 @@
 
 package org.killbill.billing.plugin.accertify.core;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
+import java.util.Collection;
+import java.util.Hashtable;
+
 import org.killbill.billing.control.plugin.api.PaymentControlPluginApi;
 import org.killbill.billing.osgi.api.OSGIPluginProperties;
 import org.killbill.billing.osgi.libs.killbill.KillbillActivatorBase;
@@ -30,8 +31,8 @@ import org.killbill.clock.Clock;
 import org.killbill.clock.DefaultClock;
 import org.osgi.framework.BundleContext;
 
-import java.util.Collection;
-import java.util.Hashtable;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 
 public class AccertifyActivator extends KillbillActivatorBase {
 
@@ -44,6 +45,8 @@ public class AccertifyActivator extends KillbillActivatorBase {
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
+
+        accertifyConfigurationHandler = new AccertifyConfigurationHandler(PLUGIN_NAME, killbillAPI, logService);
 
         final AccertifyClient globalAccertifyClient = accertifyConfigurationHandler.createConfigurable(configProperties.getProperties());
         accertifyConfigurationHandler.setDefaultConfigurable(globalAccertifyClient);
@@ -58,20 +61,20 @@ public class AccertifyActivator extends KillbillActivatorBase {
 
         // Register the PaymentControlPluginApi
         final PaymentControlPluginApi paymentControlPluginApi = new AccertifyPaymentControlPluginApi(paymentPluginsSubjectToAutomaticRejection,
-                dao,
-                accertifyConfigurationHandler,
-                killbillAPI,
-                configProperties,
-                logService,
-                clock);
+                                                                                                     dao,
+                                                                                                     accertifyConfigurationHandler,
+                                                                                                     killbillAPI,
+                                                                                                     configProperties,
+                                                                                                     logService,
+                                                                                                     clock);
         registerPaymentControlPluginApi(context, paymentControlPluginApi);
 
         registerEventHandler();
     }
 
     private void registerEventHandler() {
-        final AccertifyConfigurationHandler handler = accertifyConfigurationHandler = new AccertifyConfigurationHandler(PLUGIN_NAME, killbillAPI, logService);
-        dispatcher.registerEventHandlers(new PluginConfigurationEventHandler(handler));
+        final PluginConfigurationEventHandler handler = new PluginConfigurationEventHandler(accertifyConfigurationHandler);
+        dispatcher.registerEventHandlers(handler);
 
     }
 
