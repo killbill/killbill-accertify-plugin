@@ -1,6 +1,6 @@
 /*
- * Copyright 2014 Groupon, Inc
- * Copyright 2014 The Billing Project, LLC
+ * Copyright 2014-2017 Groupon, Inc
+ * Copyright 2014-2017 The Billing Project, LLC
  *
  * The Billing Project licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -20,6 +20,8 @@ package org.killbill.billing.plugin.accertify.client;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -28,6 +30,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 public abstract class XmlMapperProvider {
 
@@ -53,7 +56,9 @@ public abstract class XmlMapperProvider {
 
         @Override
         public void serialize(final RequestDataCollection values, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
-            jgen.writeObjectFieldStart(values.getChildElementName());
+            // See https://github.com/FasterXML/jackson-dataformat-xml/issues/216
+            ((ToXmlGenerator) jgen).setNextName(new QName(null, values.getChildElementName()));
+            jgen.writeStartObject();
             for (final Map<String, Object> value : values) {
                 for (final String key : value.keySet()) {
                     jgen.writeObjectField(key, value.get(key));
